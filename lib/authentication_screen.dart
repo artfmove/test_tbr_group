@@ -39,7 +39,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               'Get Started',
