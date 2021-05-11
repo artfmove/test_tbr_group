@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'authentication_screen.dart';
 
-void main() {
+void main() async {
   runApp(MyApp());
 }
 

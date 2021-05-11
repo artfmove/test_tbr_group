@@ -5,7 +5,8 @@ class Style {
   static InputDecoration phoneField(
       {Function clearValue,
       String number,
-      TextEditingController phoneController}) {
+      TextEditingController phoneController,
+      String hintMask}) {
     return InputDecoration(
       hintStyle: TextStyle(fontSize: 15, color: Colors.grey),
       helperStyle: TextStyle(
@@ -14,7 +15,7 @@ class Style {
       focusedBorder: UnderlineInputBorder(
         borderSide: BorderSide(color: Colors.black),
       ),
-      hintText: '(201) 555-0123',
+      hintText: hintMask.replaceAll('#', '9'),
       helperText: 'Enter your phone number',
       counterText: '',
       suffix: number.length > 0

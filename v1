@@ -1,0 +1,129 @@
+import 'dart:convert';
+import 'dart:math';
+import 'package:country_code_picker/country_code_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
+
+class PhoneField extends StatefulWidget {
+  @override
+  _PhoneFieldState createState() => _PhoneFieldState();
+}
+
+class _PhoneFieldState extends State<PhoneField> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  final phoneController = TextEditingController();
+  final countryController = TextEditingController(text: '+44');
+  final manualFormatController = TextEditingController();
+  String parsedData = 'USA';
+  var globalPhoneType = PhoneNumberType.mobile;
+  var globalPhoneFormat = PhoneNumberFormat.international;
+
+  final initFuture = FlutterLibphonenumber().init();
+  String? countryCode = 'UA', hintText = '2342342';
+  void setCountryCode() async {
+    //hintText = FlutterLibphonenumber().parse('56765756');
+    print(hintText);
+    setState(() {});
+  }
+
+  String get overrideCountryCode {
+    if (countryController.text.isNotEmpty) {
+      try {
+        return CountryManager()
+            .countries
+            .firstWhere((element) =>
+                element.phoneCode ==
+                countryController.text.replaceAll(RegExp(r'[^\d]+'), ''))
+            .countryCode;
+      } catch (_) {
+        return '';
+      }
+    } else {
+      return '';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            bottom: max(
+              0,
+              24 - MediaQuery.of(context).padding.bottom,
+            ),
+          ),
+          child: Column(children: [
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CountryCodePicker(
+                  onChanged: (v) {
+                    countryCode = v.code.toString();
+                    hintText = print(countryCode);
+                  },
+                  // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
+                  initialSelection: 'IT',
+                  favorite: ['+39', 'FR'],
+                  // optional. Shows only country name and flag
+                  showCountryOnly: false,
+                  // optional. Shows only country name and flag when popup is closed.
+                  showOnlyCountryWhenClosed: false,
+                  // optional. aligns the flag and the Text left
+                  alignLeft: false,
+                ),
+                // Container(
+                //   width: 50,
+                //   child: TextField(
+                //     controller: countryController,
+                //     keyboardType: TextInputType.phone,
+                //     decoration: InputDecoration(
+                //       hintText: '+44',
+                //     ),
+                //     onChanged: (v) {
+                //       setState(() {});
+                //       print(overrideCountryCode);
+                //     },
+                //     inputFormatters: [],
+                //   ),
+                // ),
+                Container(
+                  width: 160,
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.phone,
+                    controller: phoneController,
+                    onChanged: (v) => print(countryCode),
+                    decoration: InputDecoration(hintText: hintText),
+                    inputFormatters: [
+                      LibPhonenumberTextFormatter(
+                        phoneNumberType: globalPhoneType,
+                        phoneNumberFormat: globalPhoneFormat,
+                        overrideSkipCountryCode: countryCode.toString(),
+                        onCountrySelected: (val) {
+                          setCountryCode();
+                          print('Detected country: ${val?.countryName}');
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ]),
+        ),
+      ),
+    );
+  }
+}
